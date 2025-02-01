@@ -1,0 +1,16 @@
+{
+  "lists": [
+    {
+      "id": 1,
+      "name": "All Users"
+    },
+    {
+      "id": 2,
+      "name": "Premium Subscribers"
+    },
+    {
+      "id": 3,
+      "name": "Inactive Users"
+    }
+  ]
+}

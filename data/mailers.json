@@ -1,0 +1,16 @@
+{
+  "mailers": [
+    {
+      "id": 1,
+      "name": "Welcome Email"
+    },
+    {
+      "id": 2,
+      "name": "Promotional Offer"
+    },
+    {
+      "id": 3,
+      "name": "Newsletter"
+    }
+  ]
+}

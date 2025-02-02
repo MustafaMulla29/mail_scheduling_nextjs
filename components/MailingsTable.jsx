@@ -19,18 +19,17 @@ import {
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Spinner from "./spinner";
+import Spinner from "./Spinner.jsx";
 
-const MailingsTable = ({ setAlert }) => {
+const MailingsTable = ({ setAlert, open, setIsOpen }) => {
   const [mailings, setMailings] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchMailings = async () => {
     try {
-      setIsLoading(true);
       const res = await axios.get("api/mailings");
       if (res.status === 200) {
-        setMailings(res.data.mailings);
+        setMailings(res.data);
       }
     } catch (error) {
       console.log(error);
@@ -48,31 +47,56 @@ const MailingsTable = ({ setAlert }) => {
   useEffect(() => {
     fetchMailings();
   }, []);
+
   return (
     <>
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <div className="w-full">
-          <div className="flex justify-between items-center mb-4">
+      <div className="container mx-auto p-4">
+        <div className="flex justify-between items-center mb-4">
+          <div>
             <h2 className="text-2xl font-bold">Scheduled Mailings</h2>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Create
-            </Button>
+            <p className="text-gray-600 text-[14px]">
+              See your all scheduled mailings
+            </p>
           </div>
-          <Table>
-            <TableHeader>
+          <Button onClick={() => setIsOpen(true)}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Create
+          </Button>
+        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Mailer</TableHead>
+              <TableHead>List</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
               <TableRow>
-                <TableHead>Mailer</TableHead>
-                <TableHead>List</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableCell colSpan="5" className="text-center">
+                  <div className="flex justify-center items-center py-10">
+                    <Spinner />
+                  </div>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {mailings?.map((mailing, index) => (
+            ) : mailings.length === 0 && !isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan="5"
+                  className="text-center text-gray-500 py-10"
+                >
+                  No scheduled mailings found. <br />
+                  <Button className="mt-2" onClick={() => setIsOpen(true)}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Create Mailing
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ) : (
+              mailings.map((mailing, index) => (
                 <TableRow key={index}>
                   <TableCell>{mailing.mailer}</TableCell>
                   <TableCell>{mailing.list}</TableCell>
@@ -95,11 +119,11 @@ const MailingsTable = ({ setAlert }) => {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </>
   );
 };

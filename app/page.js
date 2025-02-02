@@ -1,12 +1,15 @@
 'use client';
 
-import AddMailing from '@/components/AddMailing';
 import AlertComponent from '@/components/Alert';
 import MailingsTable from '@/components/MailingsTable';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 
 export default function Home() {
   const [alert, setAlert] = useState(null);
+  const [open, setIsOpen] = useState(false);
+
+  const AddMailingDialog = dynamic(() => import('@/components/AddMailing'));
 
   return (
     <div className="">
@@ -17,8 +20,8 @@ export default function Home() {
           variant={alert?.variant}
         />
       </div>
-      <AddMailing alert={alert} setAlert={setAlert} />
-      <MailingsTable setAlert={setAlert} />
+      <AddMailingDialog alert={alert} setAlert={setAlert} open={open} setIsOpen={setIsOpen} />
+      <MailingsTable setAlert={setAlert} open={open} setIsOpen={setIsOpen} />
     </div>
   );
 }

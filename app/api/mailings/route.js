@@ -11,8 +11,13 @@ export const GET = () => {
 export const POST = async (req) => {
     try {
         const newMailing = await req.json();
+        const id = mailings.length + 1;
+        const mailingData = {
+            id,
+            ...newMailing
+        }
 
-        mailings.push(newMailing);
+        mailings.push(mailingData);
 
         fs.writeFileSync(filePath, JSON.stringify({ mailings }, null, 2), 'utf8');
 

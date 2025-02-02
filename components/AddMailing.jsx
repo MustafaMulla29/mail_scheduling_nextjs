@@ -1,22 +1,25 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import ListSelector from "./ListSelector";
 import axios from "axios";
 import MailerSelector from "./MailerSelector";
-import Spinner from "./Spinner";
 import { DatePicker } from "./DatePicker";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "./ui/dialog";
 import { Button } from "./ui/button";
-import { Loader, PlusIcon } from "lucide-react";
+import { Loader, PlusCircle } from "lucide-react";
 import TimePicker from "./TimePicker";
+import Spinner from "./Spinner.jsx";
 
-const AddMailing = ({ alert, setAlert }) => {
+const AddMailing = ({ alert, setAlert, open, setIsOpen }) => {
   const [mailers, setMailers] = useState([]);
   const [lists, setLists] = useState([]);
   const [selectedMailer, setSelectedMailer] = useState(null);
@@ -60,7 +63,7 @@ const AddMailing = ({ alert, setAlert }) => {
 
       if (res.status === 201) {
         setAlert({
-          heading: "success",
+          heading: "Success",
           desc: "Mailing scheduled successfully",
           variant: "success",
         });
@@ -69,6 +72,7 @@ const AddMailing = ({ alert, setAlert }) => {
         setDate(null);
         setTime("00:00");
         setTimeout(() => setAlert(null), 3000);
+        setIsOpen(false);
       }
     } catch (error) {
       setAlert({
@@ -83,30 +87,28 @@ const AddMailing = ({ alert, setAlert }) => {
   };
 
   return (
-    <>
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <form action="" onSubmit={submit}>
-          <Card className="w-full max-w-md mx-auto">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold">Schedule</CardTitle>
-              <CardDescription>
-                Add a schedule for your email campaign
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <MailerSelector
-                  mailers={mailers}
-                  setSelectedMailer={setSelectedMailer}
-                />
-                <ListSelector lists={lists} setSelectedList={setSelectedList} />
-                <DatePicker date={date} setDate={setDate} />
-                <TimePicker time={time} setTime={setTime} />
-              </div>
-            </CardContent>
-            <CardFooter>
+    <Dialog open={open} onOpenChange={setIsOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">Schedule</DialogTitle>
+          <DialogDescription>
+            Add a schedule for your email campaign
+          </DialogDescription>
+        </DialogHeader>
+        {isLoading ? (
+          <div className="w-full h-64">
+            <Spinner />
+          </div>
+        ) : (
+          <form onSubmit={submit} className="space-y-6">
+            <MailerSelector
+              mailers={mailers}
+              setSelectedMailer={setSelectedMailer}
+            />
+            <ListSelector lists={lists} setSelectedList={setSelectedList} />
+            <DatePicker date={date} setDate={setDate} />
+            <TimePicker time={time} setTime={setTime} />
+            <DialogFooter>
               <Button
                 disabled={
                   !selectedMailer ||
@@ -120,15 +122,15 @@ const AddMailing = ({ alert, setAlert }) => {
                 {isSubmitted ? (
                   <Loader size={20} className="animate-spin" />
                 ) : (
-                  <PlusIcon />
+                  <PlusCircle />
                 )}
                 Add
               </Button>
-            </CardFooter>
-          </Card>
-        </form>
-      )}
-    </>
+            </DialogFooter>
+          </form>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 

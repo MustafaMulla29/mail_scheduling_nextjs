@@ -8,10 +8,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const MailerSelector = ({ mailers, setSelectedMailer }) => {
+const MailerSelector = ({
+  isEdit,
+  selectedMailer,
+  mailers,
+  setSelectedMailer,
+}) => {
   return (
     <div>
-      <Select onValueChange={(value) => setSelectedMailer(value)}>
+      <Select
+        value={isEdit ? selectedMailer : ""}
+        onValueChange={(value) => setSelectedMailer(value)}
+      >
         <SelectTrigger className="">
           <SelectValue placeholder="Select mailer" />
         </SelectTrigger>

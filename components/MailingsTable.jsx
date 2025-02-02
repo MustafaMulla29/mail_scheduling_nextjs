@@ -21,7 +21,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner.jsx";
 
-const MailingsTable = ({ setAlert, open, setIsOpen }) => {
+const MailingsTable = ({ setIsEdit, setAlert, setIsOpen, setEditId }) => {
   const [mailings, setMailings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,9 +34,9 @@ const MailingsTable = ({ setAlert, open, setIsOpen }) => {
     } catch (error) {
       console.log(error);
       setAlert({
-        heading: "error",
+        heading: "Error",
         desc: "Failed to fetch mailings",
-        variant: "error",
+        variant: "destructive",
       });
       setTimeout(() => setAlert(null), 3000);
     } finally {
@@ -48,6 +48,35 @@ const MailingsTable = ({ setAlert, open, setIsOpen }) => {
     fetchMailings();
   }, []);
 
+  const handleEdit = (id) => {
+    setEditId(id);
+    setIsEdit(true);
+    setIsOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`api/mailings/`, { params: { id } });
+      if (res.status === 200) {
+        setAlert({
+          heading: "success",
+          desc: "Mailing deleted successfully",
+          variant: "success",
+        });
+        setTimeout(() => setAlert(null), 3000);
+        fetchMailings();
+      }
+    } catch (error) {
+      console.log(error);
+      setAlert({
+        heading: "error",
+        desc: "Failed to delete mailing",
+        variant: "error",
+      });
+      setTimeout(() => setAlert(null), 3000);
+    }
+  };
+
   return (
     <>
       <div className="container mx-auto p-4">
@@ -58,7 +87,12 @@ const MailingsTable = ({ setAlert, open, setIsOpen }) => {
               See your all scheduled mailings
             </p>
           </div>
-          <Button onClick={() => setIsOpen(true)}>
+          <Button
+            onClick={() => {
+              setIsEdit(false);
+              setIsOpen(true);
+            }}
+          >
             <PlusCircle className="mr-2 h-4 w-4" />
             Create
           </Button>
@@ -112,9 +146,17 @@ const MailingsTable = ({ setAlert, open, setIsOpen }) => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleEdit(mailing.id)}
+                        >
+                          Edit
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(mailing.id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

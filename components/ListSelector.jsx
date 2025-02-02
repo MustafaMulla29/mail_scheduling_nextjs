@@ -9,10 +9,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const ListSelector = ({ lists, setSelectedList }) => {
+const ListSelector = ({ isEdit, selectedList, lists, setSelectedList }) => {
   return (
     <div>
-      <Select onValueChange={(value) => setSelectedList(value)}>
+      <Select
+        value={isEdit ? selectedList : ""}
+        onValueChange={(value) => setSelectedList(value)}
+      >
         <SelectTrigger className="">
           <SelectValue placeholder="Select List" />
         </SelectTrigger>

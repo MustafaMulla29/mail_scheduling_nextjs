@@ -8,6 +8,8 @@ import { useState } from 'react';
 export default function Home() {
   const [alert, setAlert] = useState(null);
   const [open, setIsOpen] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [isEdit, setIsEdit] = useState(false);
 
   const AddMailingDialog = dynamic(() => import('@/components/AddMailing'));
 
@@ -20,8 +22,8 @@ export default function Home() {
           variant={alert?.variant}
         />
       </div>
-      <AddMailingDialog alert={alert} setAlert={setAlert} open={open} setIsOpen={setIsOpen} />
-      <MailingsTable setAlert={setAlert} open={open} setIsOpen={setIsOpen} />
+      <AddMailingDialog alert={alert} setAlert={setAlert} open={open} setIsOpen={setIsOpen} editId={editId} isEdit={isEdit} setIsEdit={setIsEdit} />
+      <MailingsTable setAlert={setAlert} open={open} setIsOpen={setIsOpen} setEditId={setEditId} setIsEdit={setIsEdit} />
     </div>
   );
 }

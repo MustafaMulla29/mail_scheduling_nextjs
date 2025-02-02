@@ -1,3 +1,11 @@
 {
-  "mailings": []
+  "mailings": [
+    {
+      "id": 1,
+      "mailer": "Promotional Offer",
+      "list": "Inactive Users",
+      "date": "2025-02-03",
+      "time": "08:09"
+    }
+  ]
 }

@@ -12,14 +12,20 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Loader, PlusCircle } from "lucide-react";
 import TimePicker from "./TimePicker";
 import Spinner from "./Spinner.jsx";
 
-const AddMailing = ({ alert, setAlert, open, setIsOpen }) => {
+const AddMailing = ({
+  isEdit,
+  setIsEdit,
+  setAlert,
+  open,
+  setIsOpen,
+  editId,
+}) => {
   const [mailers, setMailers] = useState([]);
   const [lists, setLists] = useState([]);
   const [selectedMailer, setSelectedMailer] = useState(null);
@@ -36,44 +42,91 @@ const AddMailing = ({ alert, setAlert, open, setIsOpen }) => {
         axios.get("/api/lists"),
       ]);
 
-      if (mailersRes.status === 200) setMailers(mailersRes.data.mailers);
-      if (listsRes.status === 200) setLists(listsRes.data.lists);
+      if (mailersRes.status === 200 && listsRes.status === 200) {
+        setMailers(mailersRes.data.mailers || []);
+        setLists(listsRes.data.lists || []);
+        setIsLoading(false);
+      }
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (open) fetchData();
+  }, [open]);
+
+  useEffect(() => {
+    if (!isEdit) return;
+    console.log("Fetch date");
+    const fetchMailing = async () => {
+      try {
+        const res = await axios.get(`/api/mailings`, {
+          params: { id: editId },
+        });
+
+        if (res.status === 200) {
+          const mailing = res.data;
+          setSelectedMailer(mailing.mailer);
+          setSelectedList(mailing.list);
+          setDate(new Date(mailing.date));
+          setTime(mailing.time);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchMailing();
+  }, [isEdit]);
+
+  console.log("Date", date, "isEdit", isEdit, "open", open);
 
   const submit = async (e) => {
+    e.preventDefault();
+    if (isSubmitted) return;
+    setIsSubmitted(true);
+
     try {
-      e.preventDefault();
-      setIsSubmitted(true);
       const data = {
         mailer: selectedMailer,
         list: selectedList,
-        date: date.toISOString().split("T")[0],
+        date: date ? date.toISOString().split("T")[0] : null,
         time,
       };
-      const res = await axios.post("/api/mailings", data);
+      let res;
 
-      if (res.status === 201) {
-        setAlert({
-          heading: "Success",
-          desc: "Mailing scheduled successfully",
-          variant: "success",
-        });
-        setSelectedList(null);
-        setSelectedMailer(null);
-        setDate(null);
-        setTime("00:00");
-        setTimeout(() => setAlert(null), 3000);
-        setIsOpen(false);
+      if (isEdit) {
+        res = await axios.patch("/api/mailings/", { data, id: editId });
+        if (res.status === 200) {
+          setAlert({
+            heading: "Success",
+            desc: "Mailing updated",
+            variant: "success",
+          });
+          setSelectedList(res.data.list);
+          setSelectedMailer(res.data.mailer);
+          setDate(new Date(res.data.date));
+          setTime(res.data.time);
+        }
+      } else {
+        res = await axios.post("/api/mailings", data);
+        if (res.status === 201) {
+          setAlert({
+            heading: "Success",
+            desc: "Mailing scheduled successfully",
+            variant: "success",
+          });
+          setSelectedList(null);
+          setSelectedMailer(null);
+          setDate(null);
+          setTime("00:00");
+        }
       }
+
+      setTimeout(() => setAlert(null), 2000);
+      setIsOpen(false);
+      window.location.reload();
     } catch (error) {
       setAlert({
         heading: "Error!",
@@ -87,12 +140,18 @@ const AddMailing = ({ alert, setAlert, open, setIsOpen }) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setIsOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        setIsOpen(value && isEdit);
+        if (!value) setIsEdit(false);
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Schedule</DialogTitle>
           <DialogDescription>
-            Add a schedule for your email campaign
+            {isEdit ? "Edit" : "Add"} a schedule for your email campaign
           </DialogDescription>
         </DialogHeader>
         {isLoading ? (
@@ -103,11 +162,18 @@ const AddMailing = ({ alert, setAlert, open, setIsOpen }) => {
           <form onSubmit={submit} className="space-y-6">
             <MailerSelector
               mailers={mailers}
+              selectedMailer={selectedMailer}
               setSelectedMailer={setSelectedMailer}
+              isEdit={isEdit}
             />
-            <ListSelector lists={lists} setSelectedList={setSelectedList} />
-            <DatePicker date={date} setDate={setDate} />
-            <TimePicker time={time} setTime={setTime} />
+            <ListSelector
+              lists={lists}
+              selectedList={selectedList}
+              setSelectedList={setSelectedList}
+              isEdit={isEdit}
+            />
+            <DatePicker date={date} setDate={setDate} isEdit={isEdit} />
+            <TimePicker time={time} setTime={setTime} isEdit={isEdit} />
             <DialogFooter>
               <Button
                 disabled={
@@ -124,7 +190,7 @@ const AddMailing = ({ alert, setAlert, open, setIsOpen }) => {
                 ) : (
                   <PlusCircle />
                 )}
-                Add
+                {editId ? "Submit" : "Add"}
               </Button>
             </DialogFooter>
           </form>

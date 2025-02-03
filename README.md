@@ -54,7 +54,7 @@ A web application for scheduling and managing email campaigns. The app allows us
 - `components/`: Contains React components such as `AddMailing`, `MailerSelector`, `ListSelector`, `DatePicker`, etc.
 - `app/page.js`: Contains the Next.js page for the homepage.
 - `app/api/`: Contains all the mocked api's.
-- `data/`: Contains all the json data.
+- `tmp/`: Contains all the json data.
 
 ## Usage
 

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const filePath = path.join(process.cwd(), 'data', 'mailings.json');
+const filePath = path.join(process.cwd(), 'tmp', 'mailings.json');
 let mailings = JSON.parse(fs.readFileSync(filePath, 'utf8')).mailings;
 
 export const GET = (req) => {
@@ -19,7 +19,6 @@ export const GET = (req) => {
 
     return new Response(JSON.stringify(mailings), { status: 200 });
 };
-
 
 
 export const POST = async (req) => {

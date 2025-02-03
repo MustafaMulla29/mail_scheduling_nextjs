@@ -3,7 +3,7 @@
     {
       "id": 1,
       "mailer": "Welcome Email",
-      "list": "All Users",
+      "list": "Premium Subscribers",
       "date": "2025-02-04",
       "time": "04:00"
     },
@@ -13,6 +13,13 @@
       "list": "Premium Subscribers",
       "date": "2025-02-09",
       "time": "08:05"
+    },
+    {
+      "id": 3,
+      "mailer": "Promotional Offer",
+      "list": "Premium Subscribers",
+      "date": "2025-02-10",
+      "time": "06:00"
     }
   ]
 }

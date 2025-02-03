@@ -17,7 +17,7 @@ const MailerSelector = ({
   return (
     <div>
       <Select
-        value={isEdit ? selectedMailer : ""}
+        value={selectedMailer || ""}
         onValueChange={(value) => setSelectedMailer(value)}
       >
         <SelectTrigger className="">

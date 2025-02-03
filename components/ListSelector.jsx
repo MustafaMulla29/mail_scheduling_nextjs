@@ -13,7 +13,7 @@ const ListSelector = ({ isEdit, selectedList, lists, setSelectedList }) => {
   return (
     <div>
       <Select
-        value={isEdit ? selectedList : ""}
+        value={selectedList || ""}
         onValueChange={(value) => setSelectedList(value)}
       >
         <SelectTrigger className="">

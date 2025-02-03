@@ -1,4 +1,4 @@
-import lists from './../../../data/lists.json'
+import lists from './../../../tmp/lists.json'
 
 export const GET = (req) => {
 

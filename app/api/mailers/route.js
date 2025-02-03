@@ -1,4 +1,4 @@
-import mailers from './../../../data/mailers.json'
+import mailers from './../../../tmp/mailers.json'
 
 export const GET = (req) => {
 
